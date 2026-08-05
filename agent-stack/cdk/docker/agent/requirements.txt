@@ -1,0 +1,13 @@
+# ACME Chatbot Agent Dependencies
+strands-agents
+strands-agents-tools
+boto3
+bedrock-agentcore
+bedrock-agentcore-starter-toolkit
+mcp
+nest-asyncio
+requests
+matplotlib
+pandas
+seaborn
+plotly

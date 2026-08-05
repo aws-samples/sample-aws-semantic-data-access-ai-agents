@@ -1,0 +1,130 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Docker files (ignored at root level, but allowed in subdirectories)
+/Dockerfile
+/Dockerfile.*
+/.dockerignore
+# Allow Dockerfiles in MCP server subdirectories
+!*/Dockerfile
+!*/.dockerignore
+
+# AgentCore generated configuration files
+.bedrock_agentcore.yaml
+.bedrock_agentcore.yml
+agentcore-config.yaml
+agentcore-config.yml
+
+# Auto-generated scripts from mcp-agentcore-runtime.ipynb
+mcp-server.py
+mcp-client.py
+mcp_client_remote.py
+
+# AWS credentials and config (if accidentally placed in project)
+.aws/
+aws-credentials
+credentials
+
+# Secrets and credentials (DO NOT COMMIT)
+*_secrets.json
+*secrets*.json
+cognito_config.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Local development files
+local_*
+test_*
+debug_*
+scratch_*
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z

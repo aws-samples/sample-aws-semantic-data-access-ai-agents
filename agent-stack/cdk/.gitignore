@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# CDK build output
+cdk.out/
+
+# CDK context (may contain account-specific info)
+cdk.context.json
+
+# TypeScript build output
+*.js
+*.d.ts
+*.js.map
+!jest.config.js
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp

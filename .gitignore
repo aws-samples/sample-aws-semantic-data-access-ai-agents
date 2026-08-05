@@ -1,0 +1,76 @@
+# Dependencies
+node_modules/
+venv/
+.venv/
+env/
+ENV/
+*-env/
+*_env/
+test-env/
+test_env/
+__pycache__/
+*.py[cod]
+
+# Virtual environments (explicit paths)
+agentcore-env/
+**/venv/
+**/.venv/
+**/test-env/
+**/test_env/
+
+# Claude Code settings
+.claude/
+
+# Build outputs
+cdk.out/
+cdk.context.json
+dist/
+build/
+*.js
+*.d.ts
+!jest.config.js
+!**/lambda/**/*.js
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.local.json
+*_secrets.json
+!*.template.json
+!**/cognito_config.json
+
+# AWS
+.aws/
+*.pem
+*.key
+
+# Deployment artifacts
+deployment_info*.json
+.bedrock_agentcore.yaml
+
+# Generated data
+data-stack/consolidated-data-stack/output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test outputs
+coverage/
+.nyc_output/
+*.lcov
+
+# Security scan reports
+reports/

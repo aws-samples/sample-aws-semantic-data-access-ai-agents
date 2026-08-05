@@ -1,0 +1,243 @@
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional
+from datetime import datetime, date
+
+@dataclass
+class Customer:
+    customer_id: str
+    email: str
+    first_name: str
+    last_name: str
+    date_of_birth: date
+    age_group: str
+    subscription_tier: str
+    subscription_start_date: datetime
+    subscription_end_date: Optional[datetime]
+    country: str
+    state: str
+    city: str
+    timezone: str
+    payment_method: str
+    monthly_revenue: float
+    lifetime_value: float
+    is_active: bool
+    acquisition_channel: str
+    preferred_genres: List[str]
+    created_at: datetime
+    updated_at: datetime
+
+@dataclass
+class Title:
+    title_id: str
+    title_name: str
+    title_type: str
+    genre: str
+    sub_genre: str
+    content_rating: str
+    release_date: date
+    duration_minutes: int
+    season_number: Optional[int]
+    episode_number: Optional[int]
+    production_country: str
+    original_language: str
+    available_languages: List[str]
+    director: str
+    cast: List[str]
+    production_studio: str
+    popularity_score: float
+    critical_rating: float
+    viewer_rating: float
+    budget_millions: float
+    revenue_millions: float
+    awards_count: int
+    is_original: bool
+    licensing_cost: float
+    created_at: datetime
+    updated_at: datetime
+
+@dataclass
+class VideoTelemetry:
+    event_id: str
+    customer_id: str
+    title_id: str
+    session_id: str
+    event_type: str
+    event_timestamp: datetime
+    watch_duration_seconds: int
+    position_seconds: int
+    completion_percentage: float
+    device_type: str
+    device_id: str
+    device_os: str
+    app_version: str
+    quality: str
+    bandwidth_mbps: float
+    buffering_events: int
+    buffering_duration_seconds: int
+    error_count: int
+    ip_address: str
+    country: str
+    state: str
+    city: str
+    isp: str
+    connection_type: str
+    
+@dataclass
+class AdCampaign:
+    campaign_id: str
+    campaign_name: str
+    advertiser_id: str
+    advertiser_name: str
+    industry: str
+    campaign_type: str
+    objective: str
+    start_date: date
+    end_date: date
+    status: str
+    daily_budget: float
+    total_budget: float
+    spent_amount: float
+    target_age_groups: List[str]
+    target_genders: List[str]
+    target_countries: List[str]
+    target_genres: List[str]
+    target_subscription_tiers: List[str]
+    ad_format: str
+    ad_duration_seconds: int
+    placement_type: str
+    creative_url: str
+    landing_page_url: str
+    impressions: int
+    unique_viewers: int
+    clicks: int
+    conversions: int
+    view_through_rate: float
+    click_through_rate: float
+    conversion_rate: float
+    cost_per_mille: float
+    cost_per_click: float
+    cost_per_conversion: float
+    created_at: datetime
+    updated_at: datetime
+
+def get_customer_schema() -> Dict[str, str]:
+    return {
+        'customer_id': 'string',
+        'email': 'string',
+        'first_name': 'string',
+        'last_name': 'string',
+        'date_of_birth': 'date',
+        'age_group': 'string',
+        'subscription_tier': 'string',
+        'subscription_start_date': 'timestamp',
+        'subscription_end_date': 'timestamp',
+        'country': 'string',
+        'state': 'string', 
+        'city': 'string',
+        'timezone': 'string',
+        'payment_method': 'string',
+        'monthly_revenue': 'double',
+        'lifetime_value': 'double',
+        'is_active': 'boolean',
+        'acquisition_channel': 'string',
+        'preferred_genres': 'array<string>',
+        'created_at': 'timestamp',
+        'updated_at': 'timestamp'
+    }
+
+def get_title_schema() -> Dict[str, str]:
+    return {
+        'title_id': 'string',
+        'title_name': 'string',
+        'title_type': 'string',
+        'genre': 'string',
+        'sub_genre': 'string',
+        'content_rating': 'string',
+        'release_date': 'date',
+        'duration_minutes': 'int',
+        'season_number': 'int',
+        'episode_number': 'int',
+        'production_country': 'string',
+        'original_language': 'string',
+        'available_languages': 'array<string>',
+        'director': 'string',
+        'cast': 'array<string>',
+        'production_studio': 'string',
+        'popularity_score': 'double',
+        'critical_rating': 'double',
+        'viewer_rating': 'double',
+        'budget_millions': 'double',
+        'revenue_millions': 'double',
+        'awards_count': 'int',
+        'is_original': 'boolean',
+        'licensing_cost': 'double',
+        'created_at': 'timestamp',
+        'updated_at': 'timestamp'
+    }
+
+def get_telemetry_schema() -> Dict[str, str]:
+    return {
+        'event_id': 'string',
+        'customer_id': 'string',
+        'title_id': 'string',
+        'session_id': 'string',
+        'event_type': 'string',
+        'event_timestamp': 'timestamp',
+        'watch_duration_seconds': 'int',
+        'position_seconds': 'int',
+        'completion_percentage': 'double',
+        'device_type': 'string',
+        'device_id': 'string',
+        'device_os': 'string',
+        'app_version': 'string',
+        'quality': 'string',
+        'bandwidth_mbps': 'double',
+        'buffering_events': 'int',
+        'buffering_duration_seconds': 'int',
+        'error_count': 'int',
+        'ip_address': 'string',
+        'country': 'string',
+        'state': 'string',
+        'city': 'string',
+        'isp': 'string',
+        'connection_type': 'string'
+    }
+
+def get_campaign_schema() -> Dict[str, str]:
+    return {
+        'campaign_id': 'string',
+        'campaign_name': 'string',
+        'advertiser_id': 'string',
+        'advertiser_name': 'string',
+        'industry': 'string',
+        'campaign_type': 'string',
+        'objective': 'string',
+        'start_date': 'date',
+        'end_date': 'date',
+        'status': 'string',
+        'daily_budget': 'double',
+        'total_budget': 'double',
+        'spent_amount': 'double',
+        'target_age_groups': 'array<string>',
+        'target_genders': 'array<string>',
+        'target_countries': 'array<string>',
+        'target_genres': 'array<string>',
+        'target_subscription_tiers': 'array<string>',
+        'ad_format': 'string',
+        'ad_duration_seconds': 'int',
+        'placement_type': 'string',
+        'creative_url': 'string',
+        'landing_page_url': 'string',
+        'impressions': 'bigint',
+        'unique_viewers': 'bigint',
+        'clicks': 'bigint',
+        'conversions': 'bigint',
+        'view_through_rate': 'double',
+        'click_through_rate': 'double',
+        'conversion_rate': 'double',
+        'cost_per_mille': 'double',
+        'cost_per_click': 'double',
+        'cost_per_conversion': 'double',
+        'created_at': 'timestamp',
+        'updated_at': 'timestamp'
+    }
