@@ -250,6 +250,29 @@ After deployment, access the CloudFront URL and login with:
 > `agent-stack/cdk/bin/app.ts` (it ships as `true`, which applies DESTROY removal policies
 > and auto-deletes S3 objects).
 
+## Outputs
+
+After deploying the agent stack, you'll get:
+
+| Output | Description |
+|--------|-------------|
+| `FrontendUrl` | CloudFront URL for the chat application |
+| `AgentArn` | Main agent runtime ARN |
+| `CognitoUserPoolId` | User pool ID for authentication |
+| `CognitoAppClientId` | App client ID for frontend |
+| `DiscoveryUrl` | OIDC discovery URL for JWT validation |
+| `MemoryId` | AgentCore Memory resource ID |
+| `DeploymentSummary` | Summary of key deployed resources |
+
+Aurora, Gateway, and OAuth provider details are emitted as construct-scoped outputs whose
+keys carry a CDK-generated hash suffix. Match them by substring, as the commands in this
+guide do (`?contains(OutputKey,`ClusterArn`)`), or list all keys with:
+
+```bash
+aws cloudformation describe-stacks --stack-name AcmeAgentCoreStack --region us-west-2 \
+  --query 'Stacks[0].Outputs[*].[OutputKey,OutputValue]' --output table
+```
+
 ## Features
 
 - **Conversation Memory**: Persistent chat history via AgentCore Memory
@@ -321,29 +344,6 @@ Bedrock are charged per query and per token.
 Run the [Cleanup](#cleanup) steps when you are finished to stop ongoing charges. Costs vary
 by region and usage — use the [AWS Pricing Calculator](https://calculator.aws/) to estimate
 for your account.
-
-## Outputs
-
-After deploying the agent stack, you'll get:
-
-| Output | Description |
-|--------|-------------|
-| `FrontendUrl` | CloudFront URL for the chat application |
-| `AgentArn` | Main agent runtime ARN |
-| `CognitoUserPoolId` | User pool ID for authentication |
-| `CognitoAppClientId` | App client ID for frontend |
-| `DiscoveryUrl` | OIDC discovery URL for JWT validation |
-| `MemoryId` | AgentCore Memory resource ID |
-| `DeploymentSummary` | Summary of key deployed resources |
-
-Aurora, Gateway, and OAuth provider details are emitted as construct-scoped outputs whose
-keys carry a CDK-generated hash suffix. Match them by substring, as the commands in this
-guide do (`?contains(OutputKey,`ClusterArn`)`), or list all keys with:
-
-```bash
-aws cloudformation describe-stacks --stack-name AcmeAgentCoreStack --region us-west-2 \
-  --query 'Stacks[0].Outputs[*].[OutputKey,OutputValue]' --output table
-```
 
 ## Cleanup
 
