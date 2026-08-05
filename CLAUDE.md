@@ -6,11 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AWS Bedrock AgentCore demonstration with MCP (Model Context Protocol) integration. The project showcases an ACME Corp chatbot that can query AWS documentation, analyze streaming telemetry data, and query CRM data via natural language.
 
-**Region**: us-west-2 | **Model**: Claude Haiku 4.5 | **Docker Platform**: linux/arm64
+**Region**: us-west-2 | **Model**: `global.anthropic.claude-haiku-4-5-20251001-v1:0` (cross-region profile) | **Docker Platform**: linux/arm64
 
 ## Git Workflow
 
-All development happens on the `dev` branch. The `main` branch is protected and should not be modified directly. Always work on `dev` and merge to `main` only for releases.
+Private repo (`aws-samples/sample-aws-semantic-data-access-ai-agents`), main-only. Commit and push directly to `main` — do not create feature branches.
 
 ## Architecture
 
@@ -127,6 +127,8 @@ aws cognito-idp admin-set-user-password --user-pool-id $USER_POOL_ID \
 | `agent-stack/frontend/acme-chat/src/config.ts` | Frontend config (reads REACT_APP_* env vars) |
 | `data-stack/consolidated-data-stack/lib/config.ts` | Data stack configuration |
 
+**Docs**: verify README claims against config/code, not other docs. `acme_crm` has exactly two tables — whatever `lambda/aurora-init/index.py` creates (`support_tickets`, `content_ratings`). Glue table columns come from `data-lake-stack.ts`, not the README.
+
 ## MCP Servers
 
 Located in `agent-stack/aws-mcp-server-agentcore/`:
@@ -163,7 +165,12 @@ The agent accesses all MCP tools through a single AgentCore Gateway (`gateway-co
 - **Session ID**: Capture `mcp-session-id` header from initialize response
 - **Bearer Token**: OAuth client_credentials flow via Cognito domain, cached for 50 minutes
 
+### CloudFormation Outputs
+- Outputs declared inside constructs (Aurora `ClusterArn`/`SecretArn`/`DatabaseName`, `GatewayId`, `OAuthProviderArn`) get a CDK hash suffix — query with ``?contains(OutputKey,`X`)``, never an exact name. Only stack-level outputs (`FrontendUrl`, `AgentArn`, `CognitoUserPoolId`, `CognitoAppClientId`, `DiscoveryUrl`, `MemoryId`) have stable keys
+- `agent-stack/cdk/bin/app.ts` ships `developmentMode: true` (DESTROY removal policies, auto-delete S3) — set false for anything non-demo
+
 ### Memory
+- Event expiry is 90 days (`Config.agent.memory.expirationDays`)
 - Memory requires at least one strategy (e.g. `MemoryStrategy.usingBuiltInSummarization()`) for data plane operations (CreateEvent/ListEvents). Empty `strategies: []` causes "Memory status is not active" errors
 - Available built-in strategies: `usingBuiltInSummarization()`, `usingBuiltInSemantic()`, `usingBuiltInUserPreference()`
 
