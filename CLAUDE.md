@@ -165,12 +165,20 @@ The agent accesses all MCP tools through a single AgentCore Gateway (`gateway-co
 - **Session ID**: Capture `mcp-session-id` header from initialize response
 - **Bearer Token**: OAuth client_credentials flow via Cognito domain, cached for 50 minutes
 
+### Teardown
+- Verified E2E in us-west-2 (2026-08-05): all 4 stacks deploy and destroy cleanly, zero DELETE_FAILED
+- Survives `cdk destroy` and needs manual cleanup: Kinesis `acme-telemetry-stream`, all `acme`/`Acme` log groups, and any runtime-created `ACMEChatMemory_*`
+- `aws logs` `contains()` is case-sensitive — match both `acme` and `Acme` or the `AcmeAgentCoreStack-*` Lambda log groups are missed
+- `aws-cli` v2 has NO `bedrock-agentcore-control` command — use boto3 to list/delete runtimes, gateways, and memories
+- This account holds unrelated resources (Neptune, `cmcd-data-stream`, `fts-media-stream`, `smart-home-events`, other AgentCore runtimes/gateways) — never bulk-delete by loose name match
+
 ### CloudFormation Outputs
 - Outputs declared inside constructs (Aurora `ClusterArn`/`SecretArn`/`DatabaseName`, `GatewayId`, `OAuthProviderArn`) get a CDK hash suffix — query with ``?contains(OutputKey,`X`)``, never an exact name. Only stack-level outputs (`FrontendUrl`, `AgentArn`, `CognitoUserPoolId`, `CognitoAppClientId`, `DiscoveryUrl`, `MemoryId`) have stable keys
 - `agent-stack/cdk/bin/app.ts` ships `developmentMode: true` (DESTROY removal policies, auto-delete S3) — set false for anything non-demo
 
 ### Memory
 - Event expiry is 90 days (`Config.agent.memory.expirationDays`)
+- `memory_manager.py` uses the CDK memory via the `MEMORY_ID` env var. Only when `MEMORY_ID` is empty does it create an `ACMEChatMemory_<md5(actor_id)>` resource at runtime — that fallback is NOT owned by CloudFormation and survives `cdk destroy`
 - Memory requires at least one strategy (e.g. `MemoryStrategy.usingBuiltInSummarization()`) for data plane operations (CreateEvent/ListEvents). Empty `strategies: []` causes "Memory status is not active" errors
 - Available built-in strategies: `usingBuiltInSummarization()`, `usingBuiltInSemantic()`, `usingBuiltInUserPreference()`
 

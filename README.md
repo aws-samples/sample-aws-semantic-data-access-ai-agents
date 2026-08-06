@@ -361,11 +361,49 @@ cdk destroy AcmeAgentCoreStack --force
 # Kinesis Data Stream may not be deleted by CDK - delete manually if needed
 aws kinesis delete-stream --stream-name acme-telemetry-stream --region us-west-2
 
-# Clean up orphaned CloudWatch log groups
+# Clean up orphaned CloudWatch log groups.
+# CloudFormation names Lambda log groups after the stack (AcmeAgentCoreStack-*,
+# AcmeDataLakeStack-*), while Firehose/Lambda/runtime groups use lowercase
+# 'acme'. CloudWatch's contains() is case-sensitive, so match both.
 for log_group in $(aws logs describe-log-groups --region us-west-2 \
-  --query 'logGroups[?contains(logGroupName, `acme`)].logGroupName' --output text); do
+  --query 'logGroups[?contains(logGroupName, `acme`) || contains(logGroupName, `Acme`)].logGroupName' \
+  --output text); do
+  echo "Deleting log group: $log_group"
   aws logs delete-log-group --log-group-name "$log_group" --region us-west-2
 done
+```
+
+> **The agent creates a memory resource outside CloudFormation.** If `MEMORY_ID` is
+> not set in the runtime environment, `memory_manager.py` falls back to creating an
+> `ACMEChatMemory_<hash>` resource at runtime. That resource is not owned by the
+> stack, so `cdk destroy` leaves it behind. Check for and remove any strays:
+>
+> ```bash
+> python3 -c "
+> import boto3
+> c = boto3.client('bedrock-agentcore-control', region_name='us-west-2')
+> for m in c.list_memories().get('memories', []):
+>     print(m['id'])"
+>
+> # Then, for each stray ACMEChatMemory_* you recognize as yours:
+> python3 -c "
+> import boto3
+> boto3.client('bedrock-agentcore-control', region_name='us-west-2').delete_memory(
+>     memoryId='ACMEChatMemory_xxxxxxxx-yyyyyyyyyy')"
+> ```
+>
+> The AWS CLI has no `bedrock-agentcore-control` command, so these checks require boto3.
+
+### Verify teardown
+
+```bash
+# Every line below should print GONE
+printf 'S3:      '; aws s3api list-buckets --query 'Buckets[?contains(Name,`acme`)].Name' --output text | grep . || echo GONE
+printf 'Aurora:  '; aws rds describe-db-clusters --region us-west-2 --query 'DBClusters[?contains(DBClusterIdentifier,`acme`)].DBClusterIdentifier' --output text | grep . || echo GONE
+printf 'Kinesis: '; aws kinesis list-streams --region us-west-2 --query 'StreamNames' --output text | tr '\t' '\n' | grep -i acme || echo GONE
+printf 'Glue:    '; aws glue get-databases --region us-west-2 --query 'DatabaseList[?Name==`acme_telemetry`].Name' --output text | grep . || echo GONE
+printf 'Cognito: '; aws cognito-idp list-user-pools --max-results 60 --region us-west-2 --query 'UserPools[?contains(Name,`acme`)].Name' --output text | grep . || echo GONE
+printf 'Logs:    '; aws logs describe-log-groups --region us-west-2 --query 'logGroups[*].logGroupName' --output text | tr '\t' '\n' | grep -i acme || echo GONE
 ```
 
 ## Security

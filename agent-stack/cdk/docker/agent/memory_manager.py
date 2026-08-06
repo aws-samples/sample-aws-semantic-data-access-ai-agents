@@ -16,6 +16,12 @@ from strands.hooks import AfterInvocationEvent, HookProvider, HookRegistry, Mess
 
 AWS_REGION = os.environ.get('AWS_REGION', 'us-west-2')
 
+# Memory resource provisioned by CDK (memory-construct.ts) and injected by
+# agent-runtime-construct.ts. Prefer this over creating one at runtime: a
+# runtime-created memory is not owned by CloudFormation, so `cdk destroy`
+# cannot delete it and it lingers in the account after teardown.
+MEMORY_ID = os.environ.get('MEMORY_ID', '')
+
 
 class ACMEChatMemoryHooks(HookProvider):
     """Memory hooks for ACME Corp chatbot using AgentCore Memory"""
@@ -104,8 +110,13 @@ def create_memory_manager(memory_name: str, actor_id: str, session_id: str, regi
     """
     Create and configure memory management for ACME Corp chatbot
 
+    Uses the CDK-provisioned memory when the MEMORY_ID environment variable is
+    set (the normal deployed path). Only when it is absent does this fall back
+    to discovering or creating a memory at runtime — that fallback resource is
+    not tracked by CloudFormation and survives `cdk destroy`.
+
     Args:
-        memory_name: Name for the memory resource
+        memory_name: Name for the memory resource (fallback path only)
         actor_id: User identifier
         session_id: Session identifier from frontend
         region: AWS region for memory service
@@ -116,6 +127,22 @@ def create_memory_manager(memory_name: str, actor_id: str, session_id: str, regi
     region = region or AWS_REGION
     memory_client = MemoryClient(region_name=region)
     memory_id = None
+
+    # Preferred path: use the CDK-provisioned memory. It already has a
+    # summarization strategy and is deleted with the stack.
+    if MEMORY_ID:
+        print(f"Using CDK-provisioned memory from MEMORY_ID: {MEMORY_ID}")
+        return ACMEChatMemoryHooks(
+            memory_client=memory_client,
+            memory_id=MEMORY_ID,
+            actor_id=actor_id,
+            session_id=session_id
+        )
+
+    # Fallback for local/standalone runs where MEMORY_ID is not injected.
+    # Creates an unmanaged memory resource that `cdk destroy` will NOT remove.
+    print("MEMORY_ID not set — falling back to runtime discover-or-create "
+          "(note: resulting memory is not managed by CloudFormation)")
 
     try:
         try:
